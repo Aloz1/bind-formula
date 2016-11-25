@@ -3,28 +3,25 @@
 include:
   - bind
 
-{{ map.log_dir }}:
+{#
+named_log_dir:
   file.directory:
+    - name: {{ map.log_dir }}:
     - user: root
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: 775
     - require:
       - pkg: bind
 
-bind_restart:
-  service.running:
-    - name: {{ map.service }}
-    - reload: False
-    - watch:
-      - file: {{ map.log_dir }}/query.log
 
-{{ map.log_dir }}/query.log:
+named_log_file:
   file.managed:
+    - name: {{ map.log_dir }}/query.log:
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: 644
     - require:
-      - file: {{ map.log_dir }}
+      - file: named_log_dir
 
 named_directory:
   file.directory:
@@ -187,3 +184,4 @@ signed-{{ view }}-{{ zone }}:
 {% endif %}
 {% endfor %}
 {% endfor %}
+#}

@@ -1,0 +1,28 @@
+// NOTE: This file is being managed by saltstack. Any changes done on this
+//       minion will be overwritten the next time state.apply is run. Please make
+//       your configuration changes on the master so that updates will remain
+//       after the next highstate
+
+{%- from "bind/map.jinja" import map with context -%}
+
+options {
+    directory "{{ map.dirs.service }}";
+    //pid-file "{{## map.dirs.run ##}}/named.pid";
+    //dump-file
+    //statistics-file
+    //memstatistics-file
+    
+    dnssec-validation auto;
+
+    listen-on-v6 { any; }
+    listen-on-v4 { any; }
+
+    // forwarders {
+    //      0.0.0.0;
+    // };
+
+    allow-query     { any; };
+    recursion yes;
+
+    auth-nxdomain no;    # conform to RFC1035
+};

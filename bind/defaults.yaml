@@ -1,0 +1,24 @@
+bind:
+  pkgs:
+    - bind
+
+  service:
+    name: bind9
+
+  permissions:
+    user: 'named'
+    group: 'named'
+    mode: '640'
+
+  dirs:
+    config: '/etc'
+    log: '/var/log/named'
+    run: '/var/run'
+    service: '/var/named'
+
+  config:
+    named: 'named.conf'
+    local: 'named.conf.local'
+    options: 'named.conf.options'
+    default_zones: 'named.conf.default-zones'
+    key: 'named.conf.key'
