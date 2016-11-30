@@ -2,7 +2,7 @@
 
 bind_running:
   service.running:
-    - name: {{ map.service }}
+    - name: {{ map.service.name }}
     - enable: True
     - reload: True
     - require:
@@ -11,7 +11,7 @@ bind_running:
 
 bind_restart:
   service.running:
-    - name: {{ map.service }}
+    - name: {{ map.service.name }}
     - reload: False
     - watch:
-      - file: {{ map.log_dir }}/query.log
+      - file: {{ map.dir.log }}/query.log

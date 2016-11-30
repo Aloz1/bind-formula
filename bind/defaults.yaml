@@ -13,7 +13,6 @@ bind:
   dirs:
     config: '/etc'
     log: '/var/log/named'
-    run: '/var/run'
     service: '/var/named'
 
   config:

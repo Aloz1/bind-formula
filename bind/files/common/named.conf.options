@@ -7,22 +7,56 @@
 
 options {
     directory "{{ map.dirs.service }}";
-    //pid-file "{{## map.dirs.run ##}}/named.pid";
-    //dump-file
-    //statistics-file
-    //memstatistics-file
-    
-    dnssec-validation auto;
 
-    listen-on-v6 { any; }
-    listen-on-v4 { any; }
+{%- if map.files.pid %}
+    pid-file "{{ map.files.pid }}";
+{%- endif -%}
+
+{%- if map.files.dump %}
+    dump-file "{{ map.files.dump }}";
+{%- endif -%}
+
+{%- if map.files.statistics %}
+    statistics-file "{{ map.files.statistics }}";
+{%- endif -%}
+
+{%- if map.files.memstatistics %}
+    memstatistics-file "{{ map.files.memstatistics }}"
+{%- endif %}
+
+    //allow-query     { any; };
+    //recursion yes;
+    
+    //dnssec-enable yes;
+    //dnssec-validation yes;
+    //dnssec-lookaside auto;
+
+    //bindkeys-file "/etc/named.iscdlv.key";
+
+    //managed-keys-directory "/var/named/dynamic";
+
+    //listen-on-v6 { any; }
+    //listen-on-v4 { any; }
+
+    // If your ISP provided one or more IP addresses for stable
+    // nameservers, you probably want to use them as forwarders.
+    // Uncomment the following block, and insert the addresses replacing
+    // the all-0's placeholder.
 
     // forwarders {
     //      0.0.0.0;
     // };
 
-    allow-query     { any; };
-    recursion yes;
+    //auth-nxdomain no;    # conform to RFC1035
 
-    auth-nxdomain no;    # conform to RFC1035
+{%- for statement in salt['pillar.get']('bind:config:options:extra', {}).items() recursive -%}
+    {{- statement|indent(4 * loop.depth, True) }}
+    {%- if statement.children -}}
+        {{- ' {' }}
+    {%- else %}
+        {{- statement|indent(4 * loop.depth, True) }}
+    {%- endif %}}
+    {%- if loop.last and loop.depth0 -%}
+        {{- '}'|indent(4 * loop.depth0, True) }}
+{%- endfor %}
 };

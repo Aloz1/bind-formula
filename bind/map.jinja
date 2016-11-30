@@ -26,12 +26,18 @@ that differ from whats in defaults.yaml
                 'service': '/var/cache/bind'
             },
         },
-        'RedHat': {},
+        'RedHat': {
+            'files': {
+                'dump': 'data/cache_dump.db';
+                'statistics': 'data/named_stats.txt';
+                'memstatistics': 'data/named_mem_stats.txt';
+            },
+        },
         'Arch': {
             'pkgs': ['bind', 'bind-tools'],
-
-            'dirs': {
-            'service_dir': '/var/named',
+            'files': {
+                'pid': '/run/named/named.pid'
+            },
         },
     },
     grain="os_family",
