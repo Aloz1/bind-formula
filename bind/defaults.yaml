@@ -15,7 +15,7 @@ bind:
     log: '/var/log/named'
     service: '/var/named'
 
-  config:
+  configs:
     named: 'named.conf'
     local: 'named.conf.local'
     options: 'named.conf.options'

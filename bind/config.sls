@@ -6,7 +6,7 @@ include:
 {#
 named_log_dir:
   file.directory:
-    - name: {{ map.log_dir }}:
+    - name: {{ map.dirs.log }}:
     - user: root
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: 775
@@ -16,7 +16,7 @@ named_log_dir:
 
 named_log_file:
   file.managed:
-    - name: {{ map.log_dir }}/query.log:
+    - name: {{ map.dirs.log }}/query.log:
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: 644
@@ -25,7 +25,7 @@ named_log_file:
 
 named_directory:
   file.directory:
-    - name: {{ map.named_directory }}
+    - name: {{ map.dirs.named }}
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
     - mode: 775

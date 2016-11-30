@@ -14,4 +14,4 @@ bind_restart:
     - name: {{ map.service.name }}
     - reload: False
     - watch:
-      - file: {{ map.dir.log }}/query.log
+      - file: {{ map.dirs.log }}/query.log
