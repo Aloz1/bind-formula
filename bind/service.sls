@@ -9,9 +9,9 @@ bind_running:
         - pkg: bind_install
         - pkg: bind_config
 
-bind_restart:
-  service.running:
-    - name: {{ map.service.name }}
-    - reload: False
-    - watch:
-      - file: {{ map.dirs.log }}/query.log
+#bind_restart:
+#  service.running:
+#    - name: {{## map.service.name ##}}
+#    - reload: False
+#    - watch:
+#      - file: {{## map.dirs.log ##}}/query.log

@@ -3,6 +3,8 @@
 include:
   - bind
 
+bind_config:
+
 {#
 named_log_dir:
   file.directory:
