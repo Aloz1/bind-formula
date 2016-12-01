@@ -55,8 +55,9 @@ options {
         {{- ' {' }}
     {%- else %}
         {{- statement|indent(4 * loop.depth, True) }}
-    {%- endif %}}
+    {%- endif %}
     {%- if loop.last and loop.depth0 -%}
         {{- '}'|indent(4 * loop.depth0, True) }}
+    {%- endif %}
 {%- endfor %}
 };
