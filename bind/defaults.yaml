@@ -8,8 +8,14 @@ bind:
   permissions:
     user: 'named'
     group: 'named'
-    dir_mode: '770'
-    file_mode: '660'
+
+    dir_modes:
+      config: '755'
+      service: '750'
+
+    file_modes:
+      config: '644'
+      service: '640'
 
   dirs:
     config: '/etc'

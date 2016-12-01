@@ -6,44 +6,49 @@ include:
 bind_dir_config:
   file.directory:
     - name: {{ map.dirs.config }}
+
     - user: root
     - group: {{ map.permissions.group }}
-    - dir_mode: 2750
-    - file_mode: 640
+    - mode: {{ map.permissions.dirs.config }}
+
     - makedirs: True
-    - recurse:
-      - user
-      - group
-      - mode
+
     - require_in:
       - bind_install
+
     - watch_in:
       - bind_running
 
 bind_dir_service:
   file.directory:
     - name: {{ map.dirs.service }}
+
     - user: {{ map.permissions.user }}
     - group: {{ map.permissions.group }}
-    - dir_mode: {{ map.permissions.dir_mode }}
-    - file_mode: {{ map.permissions.file_mode }}
+    - mode: {{ map.permissions.dirs.service }}
+
     - makedirs: True
-    - recurse:
-      - user
-      - group
-      - mode
+
     - require_in:
       - bind_install
+
     - watch_in:
       - bind_running
 
 bind_file_config:
   file.managed:
     - name: {{ map.dirs.config }}/{{ map.configs.named }}
+
     - source: 'salt://bind/files/common/{{ map.configs.named }}'
     - template: jinja
+
+    - user: root
+    - group: {{ map.permissions.group }}
+    - mode: {{ map.permissions.files.config }}
+
     - require:
       - file: bind_dir_config
+
     - watch_in:
       - bind_running
 
@@ -52,8 +57,14 @@ bind_file_options:
     - name: {{ map.dirs.config }}/{{ map.configs.options }}
     - source: 'salt://bind/files/common/{{ map.configs.options }}'
     - template: jinja
+
+    - user: root
+    - group: {{ map.permissions.group }}
+    - mode: {{ map.permissions.files.config }}
+
     - require:
         - file: bind_dir_config
+
     - watch_in:
       - bind_running
 

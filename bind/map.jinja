@@ -17,7 +17,15 @@ that differ from whats in defaults.yaml
             'permissions': {
                 'user': 'bind',
                 'group': 'bind',
-                'mode': '644'
+
+                'dir_modes': {
+                    'config': '2750',
+                    'service': '2750',
+                },
+
+                'file_modes': {
+                    'config': '640',
+                },
             },
 
             'dirs': {
