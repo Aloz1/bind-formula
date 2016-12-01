@@ -3,7 +3,7 @@ bind:
     - bind
 
   service:
-    name: bind9
+    name: named
 
   permissions:
     user: 'named'
