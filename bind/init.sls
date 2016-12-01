@@ -1,4 +1,4 @@
 include:
-    - bind.install
-    - bind.config
-    - bind.service
+  - bind.install
+  - bind.config
+  - bind.service

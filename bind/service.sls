@@ -6,8 +6,7 @@ bind_running:
     - enable: True
     - reload: True
     - require:
-        - pkg: bind_install
-        - pkg: bind_config
+      - pkg: bind_install
 
 #bind_restart:
 #  service.running:

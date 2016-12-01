@@ -8,13 +8,13 @@ bind:
   permissions:
     user: 'named'
     group: 'named'
-    mode: '640'
+    dir_mode: '770'
+    file_mode: '660'
 
   dirs:
     config: '/etc'
-    log: '/var/log/named'
+#    log: '/var/log/named'
     service: '/var/named'
-    run: '/var/run'
 
   configs:
     named: 'named.conf'
@@ -22,5 +22,3 @@ bind:
     options: 'named.conf.options'
     default_zones: 'named.conf.default-zones'
     key: 'named.conf.key'
-
-  files:
