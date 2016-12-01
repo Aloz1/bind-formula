@@ -10,7 +10,7 @@ bind_running:
 
 #bind_restart:
 #  service.running:
-#    - name: {{## map.service.name ##}}
+#    - name: {## map.service.name ##}
 #    - reload: False
 #    - watch:
-#      - file: {{## map.dirs.log ##}}/query.log
+#      - file: {## map.dirs.log ##}/query.log
