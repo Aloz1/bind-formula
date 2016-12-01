@@ -12,15 +12,15 @@ options {
     pid-file "{{ map.files.pid }}";
 {%- endif -%}
 
-{%- if map.files.dump %}
+{%- if map.files.dump is defined %}
     dump-file "{{ map.files.dump }}";
 {%- endif -%}
 
-{%- if map.files.statistics %}
+{%- if map.files.statistics is defined %}
     statistics-file "{{ map.files.statistics }}";
 {%- endif -%}
 
-{%- if map.files.memstatistics %}
+{%- if map.files.memstatistics is defined %}
     memstatistics-file "{{ map.files.memstatistics }}"
 {%- endif %}
 
