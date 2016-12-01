@@ -8,7 +8,7 @@
 options {
     directory "{{ map.dirs.service }}";
 
-{%- if map.files.pid %}
+{%- if map.files.pid is defined %}
     pid-file "{{ map.files.pid }}";
 {%- endif -%}
 
