@@ -9,7 +9,7 @@ bind_dir_config:
 
     - user: root
     - group: {{ map.permissions.group }}
-    - mode: {{ map.permissions.dirs.config }}
+    - mode: {{ map.permissions.dir_modes.config }}
 
     - makedirs: True
 
@@ -25,7 +25,7 @@ bind_dir_service:
 
     - user: {{ map.permissions.user }}
     - group: {{ map.permissions.group }}
-    - mode: {{ map.permissions.dirs.service }}
+    - mode: {{ map.permissions.dir_modes.service }}
 
     - makedirs: True
 
@@ -44,7 +44,7 @@ bind_file_config:
 
     - user: root
     - group: {{ map.permissions.group }}
-    - mode: {{ map.permissions.files.config }}
+    - mode: {{ map.permissions.file_modes.config }}
 
     - require:
       - file: bind_dir_config
@@ -60,7 +60,7 @@ bind_file_options:
 
     - user: root
     - group: {{ map.permissions.group }}
-    - mode: {{ map.permissions.files.config }}
+    - mode: {{ map.permissions.file_modes.config }}
 
     - require:
         - file: bind_dir_config
