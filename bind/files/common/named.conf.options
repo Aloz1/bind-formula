@@ -51,7 +51,7 @@ options {
 
 {%- for statement in salt['pillar.get']('bind:config:options:extra', {}).items() recursive -%}
     {{- statement|indent(4 * loop.depth, True) }}
-    {%- if statement.children -}}
+    {%- if statement.children -%}
         {{- ' {' }}
     {%- else %}
         {{- statement|indent(4 * loop.depth, True) }}
