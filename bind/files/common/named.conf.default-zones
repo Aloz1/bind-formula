@@ -1,7 +1,14 @@
+// NOTE: This file is being managed by saltstack. Any changes done on this
+//       minion will be overwritten the next time state.apply is run. Please make
+//       your configuration changes on the master so that updates will remain
+//       after the next highstate
+
+{%- from "bind/map.jinja" import map with context %}
+
 // prime the server with knowledge of the root servers
 zone "." {
       type hint;
-      file "/etc/bind/db.root";
+      filem  "/etc/bind/db.root";
 };
 
 // be authoritative for the localhost forward and reverse zones, and for

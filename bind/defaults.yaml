@@ -28,3 +28,5 @@ bind:
     options: 'named.conf.options'
     default_zones: 'named.conf.default-zones'
     key: 'named.conf.key'
+
+  zonefiles:

@@ -3,7 +3,7 @@
 //       your configuration changes on the master so that updates will remain
 //       after the next highstate
 
-{%- from "bind/map.jinja" import map with context -%}
+{%- from "bind/map.jinja" import map with context %}
 
 options {
     directory "{{ map.dirs.service }}";
