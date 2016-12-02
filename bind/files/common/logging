@@ -1,0 +1,16 @@
+/*
+logging {
+    channel default_debug {
+        file "data/named.run";
+        severity dynamic;
+    };
+};
+
+logging {
+    channel "querylog" {
+        file "{#{ map.log_dir }#}/query.log";
+        print-time yes;
+    };
+    category queries {# querylog; #};
+};
+*/

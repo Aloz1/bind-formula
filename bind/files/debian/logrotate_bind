@@ -1,3 +1,8 @@
+// NOTE: This file is being managed by saltstack. Any changes done on this
+//       minion will be overwritten the next time state.apply is run. Please make
+//       your configuration changes on the master so that updates will remain
+//       after the next highstate
+
 {{ map.log_dir }}/query.log {
     rotate 7
     daily

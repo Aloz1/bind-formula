@@ -2,8 +2,8 @@ bind:
   pkgs:
     - bind
 
-  service:
-    name: named
+  service_name: named
+  template_dir: 'files/common'
 
   permissions:
     user: 'named'
@@ -28,5 +28,3 @@ bind:
     options: 'named.conf.options'
     default_zones: 'named.conf.default-zones'
     key: 'named.conf.key'
-
-  zonefiles:

@@ -2,4 +2,4 @@
 
 bind_install:
   pkg.installed:
-    - pkgs: {{ map.pkgs|json }}
+    - pkgs: {{ map.pkgs|yaml }}
