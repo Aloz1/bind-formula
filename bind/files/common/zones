@@ -1,3 +1,4 @@
+{#
 {%- macro zone(key, args, file, masters) %}
 zone "{{ key }}" {
   type {{ args['type'] }};
@@ -58,3 +59,4 @@ zone "{{ key }}" {
   {{ zone(key, args, file, masters) }}
 {%- endfor %}
 };
+#}

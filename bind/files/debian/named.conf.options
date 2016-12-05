@@ -3,4 +3,4 @@
 //       your configuration changes on the master so that updates will remain
 //       after the next highstate
 
-{% include "bind/files/common/config.options" %}
+{% include "bind/files/common/options" %}

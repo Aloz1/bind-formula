@@ -7,5 +7,5 @@
 // organization
 //include "/etc/bind/zones.rfc1918";
 
-{% include bind/files/common/conf.zone %}
+{% include "bind/files/common/zones" %}
 

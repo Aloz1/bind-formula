@@ -12,40 +12,58 @@ that differ from whats in defaults.yaml
         'Debian': {
             'pkgs': ['bind9', 'bind9utils'],
 
-            'service': { 'name': 'bind9' },
+            'service_name': 'bind9',
 
-            'permissions': {
-                'user': 'bind',
-                'group': 'bind',
+            'user': 'bind',
+            'group': 'bind',
 
-                'dir_modes': {
-                    'config': '2750',
-                    'service': '2750',
-                },
+            'template_dir': 'salt://bind/files/debian',
 
-                'file_modes': {
-                    'config': '640',
-                },
-            },
+            'config_dir': '/etc/bind',
+            'service_dir': '/var/cache/bind',
 
             'dirs': {
-                'config': '/etc/bind',
-                'log': '/var/log/bind9',
-                'service': '/var/cache/bind'
+                '/etc/bind': {
+                    'mode': '755',
+                    'files': {
+                        'named.conf': {},
+                        'named.conf.options': {},
+                        'named.conf.local': {},
+                    },
+                },
+
+                '/var/cache/bind': {
+                    'mode': '750',
+                },
             },
         },
         'RedHat': {
-            'files': {
-                'dump': 'data/cache_dump.db',
-                'statistics': 'data/named_stats.txt',
-                'memstatistics': 'data/named_mem_stats.txt',
+            'template_dir': 'salt://bind/files/redhat',
+
+            'config_dir': '/etc',
+            'service_dir': '/var/named',
+
+            'dump_file': 'data/cache_dump.db',
+            'statistics_file': 'data/named_stats.txt',
+            'memstatistics_file': 'data/named_mem_stats.txt',
+
+            'dirs': {
+                '/etc': {
+                    'user': 'root',
+                    'group': 'root',
+                    'mode': '755',
+                    'files': {
+                        'named.conf': {},
+                    },
+                },
+                '/var/named': {},
+                '/var/named/data': {},
             },
         },
         'Arch': {
             'pkgs': ['bind', 'bind-tools'],
-            'files': {
-                'pid': '/run/named/named.pid'
-            },
+
+            'pid_file': '/run/named/named.pid',
         },
     },
     grain="os_family",

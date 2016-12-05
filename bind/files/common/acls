@@ -1,6 +1,7 @@
+{##
 match-clients {
 {%- for acl in view_data.get('match_clients', {}) %}
   {{ acl }};
 {%- endfor %}
 };
-
+##}

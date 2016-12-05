@@ -1,67 +1,68 @@
 {%- from "bind/map.jinja" import map with context %}
+{%- set allow_query = salt['pillar.get']('bind:config:options:allow-query', {}) %}
+{%- set authoritive = salt['pillar.get']('bind:config:options:authoritive', 'no') %}
+{%- set extras = salt['pillar.get']('bind:config:options:extras', {}).items() %}
+{%- set forwarders = salt['pillar.get']('bind:config:options:forwarders', {}).items() %}
+{%- set has_keys = salt['pillar.get']('bind:config:keys', {}).items()|length > 0 %}
+{%- set recursion = salt['pillar.get']('bind:config:options:recursion', "yes") -%}
 
 options {
-    directory "{{ map.dirs.service }}";
+    directory "{{ map.service_dir }}";
 
-{%- if map.dirs.managed_keys is defined %}
-    managed-keys-directory "{{ map.dirs.managed_keys }}"; //"/var/named/dynamic";
-{%- endif %}
-
-{%- if map.files.pid is defined %}
-    pid-file "{{ map.files.pid }}";
+{% if map.managed_keys_dir is defined %}
+    managed-keys-directory "{{ map.managed_keys_dir }}"; //"/var/named/dynamic";
 {%- endif -%}
 
-{%- if map.files.dump is defined %}
-    dump-file "{{ map.files.dump }}";
+{%- if map.pid_file is defined %}
+    pid-file "{{ map.pid_file }}";
+{% endif -%}
+
+{%- if map.dump_file is defined %}
+    dump-file "{{ map.dump_file }}";
 {%- endif -%}
 
-{%- if map.files.statistics is defined %}
-    statistics-file "{{ map.files.statistics }}";
+{%- if map.statistics_file is defined %}
+    statistics-file "{{ map.statistics_file }}";
 {%- endif -%}
 
-{%- if map.files.memstatistics is defined %}
-    memstatistics-file "{{ map.files.memstatistics }}"
+{%- if map.memstatistics_file is defined %}
+    memstatistics-file "{{ map.memstatistics_file }}";
 {%- endif %}
 
-{%- if map.files.bindkeys is defined %}
-    bindkeys-file "{{ map.files.bindkeys }}"; //"/etc/named.iscdlv.key";
+{%- if map.bindkeys_file is defined %}
+    bindkeys-file "{{ map.bindkeys_file }}"; //"/etc/named.iscdlv.key";
 {%- endif %}
 
 
-{% if salt['pillar.get'](bind:config:options:allow-query, None) is not None %}
+{%- if allow_query.children is defined %}
     allow-query {
-    {% for query in salt['pillar.get']('bind:config:options:allow-query', {}).items() %}
+    {% for query in allow_query.items() %}
         query;
     {% endfor %}
     };
 {% endif %}
-    recursion {{ salt['pillar.get'](bind:config:options:recursion, "yes") }};
+    recursion {{ recursion }};
     
-{% if salt['pillar.get'](bind:config:keys) is iterable %}
+{%- if has_keys %}
     dnssec-enable yes;
     dnssec-validation yes;
     dnssec-lookaside auto;
-{% endif %}
+{%- endif %}
 
     //listen-on-v6 { any; }
     //listen-on-v4 { any; }
 
-    // If your ISP provided one or more IP addresses for stable
-    // nameservers, you probably want to use them as forwarders.
-    // Uncomment the following block, and insert the addresses replacing
-    // the all-0's placeholder.
-
-{% if salt['pillar.get']('bind:config:options:forwarders', {}).items() is defined %}
+{%- if forwarders|length > 0 %}
     forwarders {
-    {% for address in salt['pillar.get']('bind:config:options:forwarders', {}).items() -%}
+    {% for address in forwarders -%}
         {{ address }};
     {% endfor %}
     };
-{% endif %}
+{%- endif %}
 
-    auth-nxdomain {{ salt['pillar.get']('bind:config:options:authoritive', 'yes') }};
+    auth-nxdomain {{ authoritive }};
 
-{%- for statement in salt['pillar.get']('bind:config:options:extra', {}).items() recursive -%}
+{%- for statement in extras recursive -%}
     {{- statement|indent(4 * loop.depth, True) }}
     {%- if statement.children -%}
         {{- ' {' }}
