@@ -4,18 +4,22 @@
 {%- set extras = salt['pillar.get']('bind:config:options:extras', {}).items() %}
 {%- set forwarders = salt['pillar.get']('bind:config:options:forwarders', {}).items() %}
 {%- set has_keys = salt['pillar.get']('bind:config:keys', {}).items()|length > 0 %}
+{%- set ip4_addrs = salt['pillar.get']('bind:config:options:listen-ip-v4') -%}
+{%- set ip4_port = salt['pillar.get']('bind:config:options:ip-v4-port', '') -%}
+{%- set ip6_addrs = salt['pillar.get']('bind:config:options:listen-ip-v6') -%}
+{%- set ip6_port = salt['pillar.get']('bind:config:options:ip-v6-port', '') -%}
 {%- set recursion = salt['pillar.get']('bind:config:options:recursion', "yes") -%}
 
 options {
     directory "{{ map.service_dir }}";
 
-{% if map.managed_keys_dir is defined %}
+{%- if map.managed_keys_dir is defined %}
     managed-keys-directory "{{ map.managed_keys_dir }}"; //"/var/named/dynamic";
 {%- endif -%}
 
 {%- if map.pid_file is defined %}
     pid-file "{{ map.pid_file }}";
-{% endif -%}
+{%- endif -%}
 
 {%- if map.dump_file is defined %}
     dump-file "{{ map.dump_file }}";
@@ -32,12 +36,10 @@ options {
 {%- if map.bindkeys_file is defined %}
     bindkeys-file "{{ map.bindkeys_file }}"; //"/etc/named.iscdlv.key";
 {%- endif %}
-
-
-{%- if allow_query.children is defined %}
+{% if allow_query is defined and allow_query|length > 0 %}
     allow-query {
-    {% for query in allow_query.items() %}
-        query;
+    {% for query in allow_query %}
+        {{ query }};
     {% endfor %}
     };
 {% endif %}
@@ -48,9 +50,20 @@ options {
     dnssec-validation yes;
     dnssec-lookaside auto;
 {%- endif %}
-
-    //listen-on-v6 { any; }
-    //listen-on-v4 { any; }
+{% if ip4_addrs is defined and ip4_addrs|length > 0 %}
+    listen-on-v4 {{ ip4_port }} {
+    {%- for addr in ip4_addrs %}
+        {{ addr }};
+    {%- endfor %}
+    };
+{%- endif %}
+{% if ip6_addrs is defined and ip6_addrs|length > 0 %}
+    listen-on-v6 {{ ip6_port }} {
+    {%- for addr in ip6_addrs %}
+        {{ addr }};
+    {%- endfor %}
+    };
+{%- endif %}
 
 {%- if forwarders|length > 0 %}
     forwarders {
