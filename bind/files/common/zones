@@ -1,52 +1,66 @@
-{#
-{%- macro zone(key, args, file, masters) %}
-zone "{{ key }}" {
-  type {{ args['type'] }};
-  {% if args['type'] == 'forward' -%}
-    {% if args['forward'] is defined -%}
-       forward {{ args['forward'] }};
-    {%- endif %}
-  forwarders {
-    {% for forwarder in args.forwarders -%}
-      {{ forwarder }};
+{%- macro zone(name, args = {}) -%}
+zone "{{ name }}" {
+    type {{ args['type'] }};
+
+{%- if args['notify'] is defined %}
+    notify {{ args['notify'] }};
+{% endif %}
+
+{%- if args['file'] != '' %}
+    file "{{ args['file'] }}";
+{%- endif %}
+
+{%- if args['masters'] is defined %}
+    masters {
+    {% for master in args['masters'] %}
+        {{ masters }};
+    {% endfor %}
+    };
+{% endif %}
+
+{%- if args['forwarders'] is defined and args['forwarders'] is iterable %}
+    forward {{ args['forward']|default('first') }};
+    forwarders {
+    {% for forwarder in args['forwarders'] -%}
+        {{ forwarder }};
     {%- endfor %}
-  };
-  {% else -%}
-  {% if args['dnssec'] is defined and args['dnssec'] -%}
-  file "{{ map.named_directory }}/{{ file }}.signed";
-  {% else -%}
-  file "{{ map.named_directory }}/{{ file }}";
-  {%- endif %}
-  {%- if args['allow-update'] is defined %}
-  allow-update { {{args['allow-update']}}; };
-  {%- endif %}
-  {%- if args.update_policy is defined %}
-  update-policy {
-  {%-   for policy in args.update_policy %}
-    {{ policy }};
-  {%- endfor %}
-  };
-  {%- endif %}
-  {%- if args['allow-transfer'] is defined %}
-  allow-transfer { {{ args.get('allow-transfer', []) | join('; ') }}; };
-  {%- endif %}
-  {%- if args['also-notify'] is defined %}
-  also-notify { {{ args.get('also-notify', []) | join('; ') }}; };
-  {%- endif %}
-  {%- if args['type'] == "master" -%}
-    {% if args['notify'] %}
-  notify yes;
-    {% else %}
-  notify no;
-    {%- endif -%}
-  {% else %}
-  notify no;
-  masters { {{ masters }} };
-  {%- endif %}
-  {%- endif %}
+    };
+{%- endif %}
+
+{%- if args['update_policy'] is defined %}
+    update-policy {
+    {%- for policy in args['update_policy'] %}
+        {{ policy }};
+    {%- endfor %}
+    };
+{%- elif args['allow_update'] is defined %}
+    allow-update {
+    {% for match in args['allow_update'] %}
+        {{ match }};
+    {%- endfor %}
+    };
+{%- endif %}
+
+{%- if args['allow_transfer'] is defined %}
+    allow-transfer {
+    {% for match in args['allow_transfer'] %}
+        {{ match }};
+    {% endfor %}
+    };
+{%- endif %}
+
+{%- if args['also_notify'] is defined %}
+    also-notify {
+    {% for match in args['also_notify'] %}
+        {{ match }};
+    {% endfor %}
+    };
+{%- endif %}
+
 };
 {%- endmacro %}
 
+{#
 {% for key, args in salt['pillar.get']('bind:configured_zones', {}).items() -%}
 {%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
 {%- set masters = salt['pillar.get']("bind:available_zones:" + key + ":masters") %}
