@@ -1,82 +1,43 @@
 bind:
-  lookup:
-    pkgs:
-      - bind
-    service: named
-    # take zonefiles from `salt://bind/zonedata`
-    # instead of `salt://zones`:
-    zones_source_dir: bind/zonedata
-
-bind:
   config:
-    tmpl: salt://bind/files/debian/named.conf
-    user: root
-    group: named
-    mode: 640
     options:
-      allow-recursion: '{ any; }'  # Never include this on a public resolver
 
-    # force bind to serve only one IP protocol (ipv4: 4, ipv6: 6). omitting this reverts to binds default of both.
-    protocol: 4
+#      ip-v4-port:
+#      ip-v6-port:
 
-    # For Debian based systems:
-    # If set to True, the default-zones configuration will be enabled. Defaults to False.
-    default_zones: True
-    # For Debian based systems:
-    # Include any additional configuration file(s) in named.conf
-    includes:
-      - /some/additional/named.conf
+      listen-ip-v4:
+        - any
 
-bind:
+      listen-ip-v6:
+        - none
+
+
   keys:
-    "core_dhcp":
-      secret: "YourSecretKey"
-  configured_zones:
-    sub.domain.com:
+    core_dhcp:
+      algorithm: 'hmac-sha256'
+      secret: '7ARSV0BnPMlN3Gdc+axq9/+T29LXpIpIta6jhab5o44='
+
+  zones:
+    '.':
+      type: forward
+      forwarders:
+        - 192.158.1.2
+
+    local.kti.com.au:
       type: master
       notify: False
-      also-notify:
-        - 1.1.1.1
-        - 2.2.2.2
+      allow-update:
+        - key "core_dhcp"
+      file:
+        name:
+        source:
+        
+        opts:
+          ttl:
+        
+        records:
+          - 
+
     1.168.192.in-addr.arpa:
       type: master
       notify: False
-      allow-transfer:
-        - 1.1.1.1
-        - 2.2.2.2
-    dynamic.domain.com:
-      type: master
-      allow-update: "key core_dhcp"
-      notify: True
-    sub.anotherdomain.com:
-      type: forward
-      forwarders:
-        - 10.9.8.7
-        - 10.9.8.5
-    sub.forwardonlydomain.com:
-      type: forward
-      forward: only
-      forwarders:
-        - 10.9.8.8
-        - 10.9.8.9
-  configured_views:
-    myview1:
-      match_clients:
-        - client1
-        - client2
-      configured_zones:
-        my.zone:
-          type: master
-          notify: False
-          update_policy:
-            - "grant core_dhcp name dns_entry_allowed_to_update. ANY"
-  configured_acls:
-    my_net:
-      - 127.0.0.0/8
-      - 10.20.0.0/16
-
-bind:
-  available_zones:
-    sub.domain.org:
-      file: db.sub.domain.org
-      masters: "192.168.0.1;"

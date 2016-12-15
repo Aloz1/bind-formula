@@ -1,0 +1,6 @@
+; Zone file, this is managed by saltstack
+$TTL {{ args['ttl']|default('1d') }}
+{% if args['origin'] is defined %}
+$ORIGIN {{ args['origin'] }}
+{% endif %}
+

@@ -13,17 +13,19 @@ include:
 
     - makedirs: True
 
+    - require:
+      - bind_install
+
     - require_in:
-      - bind_running
+      - service: bind_running
 
     - watch_in:
-      - bind_running
+      - service: bind_running
 
 {% for file_name, file_opts in (dir_opts.files|default( {} )).items() %}
-
 {{ dir_name }}/{{ file_name }}:
   file.managed:
-    - source: {{ map.template_dir|default('salt://bind/files/default') }}/{{ file_opts.source|default( file_name ) }}
+    - source: {{ map.template_dir }}/{{ file_opts.source|default( file_name ) }}
     - template: {{ file_opts.template|default( 'jinja' ) }}
 
     - user: {{ file_opts.user|default( map.user ) }}
@@ -34,12 +36,39 @@ include:
       - {{ dir_name }}
 
     - require_in:
-      - bind_running
+      - service: bind_running
 
     - watch_in:
-      - bind_running
+      - service: bind_running
 
 {% endfor %}
+
+{% if dir_name == map.keys_dir %}
+{% for key_name, key_opts in salt['pillar.get']('bind:keys', {}).items() %}
+{{ dir_name }}/{{ key_name }}.{{ map.key_extension }}:
+  file.managed:
+    - source: "salt://bind/files/common/key_file"
+    - template: jinja
+    - context:
+        key_name: {{ key_name }}
+        key_opts: {{ key_opts }}
+
+    - user: {{ map.user }}
+    - group: {{ map.group }}
+    - mode: 600
+
+    - require:
+      - {{ dir_name }}
+
+    - require_in:
+      - service: bind_running
+
+    - watch_in:
+      - service: bind_running
+
+{% endfor %}
+{% endif %}
+
 {% endfor %}
 
 {#
@@ -55,7 +84,7 @@ named_log_dir:
 
 /etc/logrotate.d/{{ map.service }}:
   file.managed:
-    - source: salt://{{ map.config_source_dir }}/logrotate_bind
+    - source: {{ map.template_dir }}/logrotate_bind
     - template: jinja
     - user: root
     - group: root

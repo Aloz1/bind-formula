@@ -1,7 +1,9 @@
-{##
-match-clients {
-{%- for acl in view_data.get('match_clients', {}) %}
-  {{ acl }};
-{%- endfor %}
+{% set acls = salt['pillar.get']('bind:acls', {}).items() %}
+
+{%- for name, addrs in acls %}
+acl "{{ name }}" {
+    {%- for addr in addrs %}
+    addr;
+    {% endfor %}
 };
-##}
+{%- endfor %}

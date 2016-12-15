@@ -20,6 +20,7 @@ that differ from whats in defaults.yaml
             'template_dir': 'salt://bind/files/debian',
 
             'config_dir': '/etc/bind',
+            'keys_dir': '/etc/bind',
             'service_dir': '/var/cache/bind',
 
             'dirs': {
@@ -41,6 +42,7 @@ that differ from whats in defaults.yaml
             'template_dir': 'salt://bind/files/redhat',
 
             'config_dir': '/etc',
+            'keys_dir': '/etc/named',
             'service_dir': '/var/named',
 
             'dump_file': 'data/cache_dump.db',
@@ -56,11 +58,15 @@ that differ from whats in defaults.yaml
                         'named.conf': {},
                     },
                 },
+                '/etc/named': {
+                    'mode': '750',
+                },
                 '/var/named': {},
                 '/var/named/data': {},
             },
         },
         'Arch': {
+            'template_dir': 'salt://bind/files/arch',
             'pkgs': ['bind', 'bind-tools'],
 
             'pid_file': '/run/named/named.pid',

@@ -51,7 +51,7 @@ options {
     dnssec-lookaside auto;
 {%- endif %}
 {% if ip4_addrs is defined and ip4_addrs|length > 0 %}
-    listen-on-v4 {{ ip4_port }} {
+    listen-on {{ ip4_port }} {
     {%- for addr in ip4_addrs %}
         {{ addr }};
     {%- endfor %}

@@ -1,0 +1,4 @@
+key "{{ key_name }}" {
+    algorithm {{ key_opts['algorithm'] }};
+    secret "{{ key_opts['secret'] }}";
+};

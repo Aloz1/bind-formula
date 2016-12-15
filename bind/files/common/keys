@@ -1,0 +1,6 @@
+{%- from "bind/map.jinja" import map with context %}
+{%- set keys = salt['pillar.get']('bind:keys', {}).items() %}
+
+{%- for name, opts in keys %}
+include "{{ map.keys_dir }}/{{ name }}.{{ map.key_extension }}";
+{% endfor %}

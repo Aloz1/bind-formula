@@ -1,3 +1,4 @@
+{%- from "bind/map.jinja" import map with context %}
 {%- macro zone(name, args = {}) -%}
 zone "{{ name }}" {
     type {{ args['type'] }};
@@ -6,8 +7,8 @@ zone "{{ name }}" {
     notify {{ args['notify'] }};
 {% endif %}
 
-{%- if args['file'] != '' %}
-    file "{{ args['file'] }}";
+{%- if args['type'] in ['master','hint'] %}
+    file "{{ args['file']|default(name) }}.{{ args['extension']|default(map.zone_db_extension) }}";
 {%- endif %}
 
 {%- if args['masters'] is defined %}
@@ -27,31 +28,31 @@ zone "{{ name }}" {
     };
 {%- endif %}
 
-{%- if args['update_policy'] is defined %}
+{%- if args['update-policy'] is defined and args['update-policy'] is iterable %}
     update-policy {
-    {%- for policy in args['update_policy'] %}
+    {%- for policy in args['update-policy'] %}
         {{ policy }};
     {%- endfor %}
     };
-{%- elif args['allow_update'] is defined %}
+{%- elif args['allow-update'] is defined and args['allow-update'] is iterable %}
     allow-update {
-    {% for match in args['allow_update'] %}
+    {% for match in args['allow-update'] %}
         {{ match }};
     {%- endfor %}
     };
 {%- endif %}
 
-{%- if args['allow_transfer'] is defined %}
+{%- if args['allow-transfer'] is defined and args['allow-transfer'] is iterable %}
     allow-transfer {
-    {% for match in args['allow_transfer'] %}
+    {% for match in args['allow-transfer'] %}
         {{ match }};
     {% endfor %}
     };
 {%- endif %}
 
-{%- if args['also_notify'] is defined %}
+{%- if args['also-notify'] is defined and args['also-notify'] is iterable %}
     also-notify {
-    {% for match in args['also_notify'] %}
+    {% for match in args['also-notify'] %}
         {{ match }};
     {% endfor %}
     };
@@ -59,18 +60,3 @@ zone "{{ name }}" {
 
 };
 {%- endmacro %}
-
-{#
-{% for key, args in salt['pillar.get']('bind:configured_zones', {}).items() -%}
-{%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
-{%- set masters = salt['pillar.get']("bind:available_zones:" + key + ":masters") %}
-{{ zone(key, args, file, masters) }}
-{% endfor %}
-
-{% for key, args in view_data.get('configured_zones', {}).items() -%}
-{%- set file = salt['pillar.get']("bind:available_zones:" + key + ":file") %}
-{%- set masters = salt['pillar.get']("bind:available_zones:" + key + ":masters") %}
-  {{ zone(key, args, file, masters) }}
-{%- endfor %}
-};
-#}
