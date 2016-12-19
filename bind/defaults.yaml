@@ -5,7 +5,6 @@ bind:
   service_name: named
 
   key_extension: named.key
-  zone_db_extension: zone.db
 
     # Default users
   user: named

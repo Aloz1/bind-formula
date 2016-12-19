@@ -69,6 +69,35 @@ include:
 {% endfor %}
 {% endif %}
 
+{% if dir_name == map.service_dir %}
+{% for zone_name, zone_opts in salt['pillar.get']('bind:zones', {}).items() %}
+{% if zone_opts['type'] in ['master','hint'] or zone_opts['file'] is defined %}
+{{ dir_name }}/named.{{ zone_name }}:
+  file.managed:
+    - source: "salt://bind/files/common/zone_file"
+    - template: jinja
+    - context:
+        origin: {{ zone_name }}
+        email: {{ zone_opts.email|default('root.'+zone_name) }}
+    - replace: false
+
+    - user: {{ map.user }}
+    - group: {{ map.group }}
+    - mode: 600
+
+    - require:
+      - {{ dir_name }}
+
+    - require_in:
+      - service: bind_running
+
+    - watch_in:
+      - service: bind_running
+
+{% endif %}
+{% endfor %}
+{% endif %}
+
 {% endfor %}
 
 {#

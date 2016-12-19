@@ -26,17 +26,10 @@ bind:
     local.kti.com.au:
       type: master
       notify: False
+      email: root.{{ salt.grains.item('domain')['domain'] }}
+
       allow-update:
         - key "core_dhcp"
-      file:
-        name:
-        source:
-        
-        opts:
-          ttl:
-        
-        records:
-          - 
 
     1.168.192.in-addr.arpa:
       type: master

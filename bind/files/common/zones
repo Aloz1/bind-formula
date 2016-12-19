@@ -7,8 +7,8 @@ zone "{{ name }}" {
     notify {{ args['notify'] }};
 {% endif %}
 
-{%- if args['type'] in ['master','hint'] %}
-    file "{{ args['file']|default(name) }}.{{ args['extension']|default(map.zone_db_extension) }}";
+{%- if args['type'] in ['master','hint'] or (args['file'] is defined and args['file'] != '') %}
+    file "named.{{ args['file']|default(name) }}";
 {%- endif %}
 
 {%- if args['masters'] is defined %}
