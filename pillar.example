@@ -26,11 +26,33 @@ bind:
     local.kti.com.au:
       type: master
       notify: False
-      email: root.{{ salt.grains.item('domain')['domain'] }}
 
       allow-update:
         - key "core_dhcp"
 
+      authority:
+        ttl: 1d
+        email: root@local.kti.com.au
+        refresh: 1200
+        retry: 600
+        expiry: 120
+        nxttl: 600
+
+      records:
+        salt:
+          type: CNAME
+          opts:
+            - salt-master # Only 1 opt for CNAME type records
+          
+
     1.168.192.in-addr.arpa:
       type: master
       notify: False
+
+      authority:
+        ttl: 1d
+        email: root@local.kti.com.au
+        refresh: 1200
+        retry: 600
+        expiry: 120
+        nxttl: 600

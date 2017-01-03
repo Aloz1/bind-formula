@@ -1,11 +1,15 @@
-$TTL 1d
+$TTL {{ authority['ttl']|default('1d') }}
 $ORIGIN {{ origin }}.
-@		IN	SOA	{{ salt.grains.item('fqdn')['fqdn'] }}.	{{ email }}.	(
+@		IN	SOA	{{ salt.grains.item('fqdn')['fqdn'] }}.	{{ (authority['email']|default('root.' + origin))|replace('@','.') }}.	(
 			{{ salt.status.time('%s') }}
-			1200
-			600
-			120
-			600 )
+			{{ authority['refresh']|default(43200) }}
+			{{ authority['retry']|default(900) }}
+			{{ authority['expiry']|default(1209600) }}
+			{{ authority['nxttl']|default(3600) }} )
 
-		IN	NS	{{ salt.grains.item('fqdn')['fqdn'][0] }}.
-dns		IN	A	{{ salt.grains.item('fqdn_ip4')['fqdn_ip4'][0] }}
+		IN	NS	{{ salt.grains.item('fqdn')['fqdn'] }}.
+{{ salt.grains.item('fqdn')['fqdn'] }}.		IN	A	{{ salt.grains.item('fqdn_ip4')['fqdn_ip4'][0] }}
+{% for lname, lname_rr in records.items() %}
+{{ lname }}	{{ lname_rr['ttl']|default('') }}	{{ lname_rr['class']|default('IN') }}	{{ lname_rr['type'] }}
+{%- for opt in lname_rr['opts'] %}	{{ opt }} {%- endfor %}
+{% endfor -%}

@@ -78,8 +78,8 @@ include:
     - template: jinja
     - context:
         origin: {{ zone_name }}
-        email: {{ zone_opts.email|default('root.'+zone_name) }}
-    - replace: false
+        authority: {{ zone_opts.authority|default({}) }}
+        records: {{ zone_opts.records|default({}) }}
 
     - user: {{ map.user }}
     - group: {{ map.group }}
