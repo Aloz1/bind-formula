@@ -1,11 +1,11 @@
-{%- from "bind/map.jinja" import map with context %}
+{%- from "bind/map.jinja" import map with context -%}
 {%- macro zone(name, args = {}) -%}
 zone "{{ name }}" {
     type {{ args['type'] }};
 
 {%- if args['notify'] is defined %}
     notify {{ args['notify'] }};
-{% endif %}
+{%- endif %}
 
 {%- if args['type'] in ['master','hint'] or (args['file'] is defined and args['file'] != '') %}
     file "named.{{ args['file']|default(name) }}";
@@ -17,7 +17,7 @@ zone "{{ name }}" {
         {{ masters }};
     {% endfor %}
     };
-{% endif %}
+{%- endif %}
 
 {%- if args['forwarders'] is defined and args['forwarders'] is iterable %}
     forward {{ args['forward']|default('first') }};
@@ -59,4 +59,4 @@ zone "{{ name }}" {
 {%- endif %}
 
 };
-{%- endmacro %}
+{%- endmacro -%}

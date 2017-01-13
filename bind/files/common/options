@@ -21,6 +21,10 @@ options {
     pid-file "{{ map.pid_file }}";
 {%- endif -%}
 
+{%- if map.session_keyfile is defined %}
+    session-keyfile "{{ map.session_keyfile }}";
+{%- endif -%}
+
 {%- if map.dump_file is defined %}
     dump-file "{{ map.dump_file }}";
 {%- endif -%}
