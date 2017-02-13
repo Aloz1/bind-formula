@@ -10,6 +10,10 @@ bind:
   user: named
   group: named
 
+  root_zone_default:
+    type: hint
+    file: ca
+
   # Default Modes
   modes:
     dir: 750

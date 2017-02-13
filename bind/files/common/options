@@ -1,20 +1,25 @@
-{%- from "bind/map.jinja" import map with context %}
-{%- set allow_query = salt['pillar.get']('bind:config:options:allow-query', {}) %}
-{%- set authoritive = salt['pillar.get']('bind:config:options:authoritive', 'no') %}
-{%- set extras = salt['pillar.get']('bind:config:options:extras', {}).items() %}
-{%- set forwarders = salt['pillar.get']('bind:config:options:forwarders', {}).items() %}
-{%- set has_keys = salt['pillar.get']('bind:config:keys', {}).items()|length > 0 %}
-{%- set ip4_addrs = salt['pillar.get']('bind:config:options:listen-ip-v4') -%}
-{%- set ip4_port = salt['pillar.get']('bind:config:options:ip-v4-port', '') -%}
-{%- set ip6_addrs = salt['pillar.get']('bind:config:options:listen-ip-v6') -%}
-{%- set ip6_port = salt['pillar.get']('bind:config:options:ip-v6-port', '') -%}
-{%- set recursion = salt['pillar.get']('bind:config:options:recursion', "yes") -%}
+{%- from "bind/map.jinja" import map with context -%}
+
+{%- set has_keys    = salt['pillar.get']('bind:config:keys', {}).items()|length > 0 -%}
+
+{%- set allow_query       = salt['pillar.get']('bind:config:options:allow-query', {}) -%}
+{%- set authoritive       = salt['pillar.get']('bind:config:options:authoritive', 'no') -%}
+{%- set dnssec_enable     = salt['pillar.get']('bind:config:options:dnssec-enable', 'yes') -%}
+{%- set dnssec_validation = salt['pillar.get']('bind:config:options:dnssec-validation', 'yes') -%}
+{%- set dnssec_lookaside  = salt['pillar.get']('bind:config:options:dnssec-lookaside', 'auto') -%}
+{%- set extras            = salt['pillar.get']('bind:config:options:extras', {}).items() -%}
+{%- set forwarders        = salt['pillar.get']('bind:config:options:forwarders', {}).items() -%}
+{%- set ip4_addrs         = salt['pillar.get']('bind:config:options:listen-ip-v4') -%}
+{%- set ip4_port          = salt['pillar.get']('bind:config:options:ip-v4-port', '') -%}
+{%- set ip6_addrs         = salt['pillar.get']('bind:config:options:listen-ip-v6') -%}
+{%- set ip6_port          = salt['pillar.get']('bind:config:options:ip-v6-port', '') -%}
+{%- set recursion         = salt['pillar.get']('bind:config:options:recursion', "yes") -%}
 
 options {
     directory "{{ map.service_dir }}";
 
-{%- if map.managed_keys_dir is defined %}
-    managed-keys-directory "{{ map.managed_keys_dir }}"; //"/var/named/dynamic";
+{%- if map.dynamic_dir is defined %}
+    managed-keys-directory "{{ map.dynamic_dir }}";
 {%- endif -%}
 
 {%- if map.pid_file is defined %}
@@ -38,7 +43,7 @@ options {
 {%- endif %}
 
 {%- if map.bindkeys_file is defined %}
-    bindkeys-file "{{ map.bindkeys_file }}"; //"/etc/named.iscdlv.key";
+    bindkeys-file "{{ map.bindkeys_file }}";
 {%- endif %}
 {% if allow_query is defined and allow_query|length > 0 %}
     allow-query {
@@ -49,27 +54,31 @@ options {
 {% endif %}
     recursion {{ recursion }};
     
-{%- if has_keys %}
-    dnssec-enable yes;
-    dnssec-validation yes;
-    dnssec-lookaside auto;
-{%- endif %}
-{% if ip4_addrs is defined and ip4_addrs|length > 0 %}
+    dnssec-enable {{ dnssec_enable }};
+    dnssec-validation {{ dnssec_validation }};
+    dnssec-lookaside {{ dnssec_lookaside }};
+
+{%- if ip4_addrs is defined and ip4_addrs|length > 0 %}
+
     listen-on {{ ip4_port }} {
     {%- for addr in ip4_addrs %}
         {{ addr }};
     {%- endfor %}
     };
+
 {%- endif %}
-{% if ip6_addrs is defined and ip6_addrs|length > 0 %}
+
+{%- if ip6_addrs is defined and ip6_addrs|length > 0 %}
+
     listen-on-v6 {{ ip6_port }} {
     {%- for addr in ip6_addrs %}
         {{ addr }};
     {%- endfor %}
     };
+
 {%- endif %}
 
-{%- if forwarders|length > 0 %}
+{% if forwarders|length > 0 -%}
     forwarders {
     {% for address in forwarders -%}
         {{ address }};
@@ -79,15 +88,15 @@ options {
 
     auth-nxdomain {{ authoritive }};
 
-{%- for statement in extras recursive -%}
-    {{- statement|indent(4 * loop.depth, True) }}
+{% for statement in extras recursive -%}
+    {{- statement|indent(4 * loop.depth, true) }}
     {%- if statement.children -%}
         {{- ' {' }}
     {%- else %}
-        {{- statement|indent(4 * loop.depth, True) }}
+        {{- statement|indent(4 * loop.depth, true) }}
     {%- endif %}
     {%- if loop.last and loop.depth0 -%}
-        {{- '}'|indent(4 * loop.depth0, True) }}
+        {{- '}'|indent(4 * loop.depth0, true) }}
     {%- endif %}
 {%- endfor %}
 };

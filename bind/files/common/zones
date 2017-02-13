@@ -1,14 +1,15 @@
 {%- from "bind/map.jinja" import map with context -%}
 {%- macro zone(name, args = {}) -%}
 zone "{{ name }}" {
+{%- set file_prefix = map.dynamic_dir + '/' if 'allow-update' in args or 'update-policy' in args else '' %}
     type {{ args['type'] }};
 
 {%- if args['notify'] is defined %}
     notify {{ args['notify'] }};
 {%- endif %}
 
-{%- if args['type'] in ['master','hint'] or (args['file'] is defined and args['file'] != '') %}
-    file "named.{{ args['file']|default(name) }}";
+{%- if args['type'] in ['master','hint'] or (args['file'] is defined and args['file'] != '' and args['type'] != 'forward') %}
+    file "{{ file_prefix }}named.{{ args['file']|default(name) }}";
 {%- endif %}
 
 {%- if args['masters'] is defined %}
@@ -22,7 +23,7 @@ zone "{{ name }}" {
 {%- if args['forwarders'] is defined and args['forwarders'] is iterable %}
     forward {{ args['forward']|default('first') }};
     forwarders {
-    {% for forwarder in args['forwarders'] -%}
+    {%- for forwarder in args['forwarders'] %}
         {{ forwarder }};
     {%- endfor %}
     };
@@ -60,3 +61,15 @@ zone "{{ name }}" {
 
 };
 {%- endmacro -%}
+
+{%- macro add_zones(zones) -%}
+{% set root_args = map.root_zone_default %}
+{% do root_args.update(zones['.']) %}
+{{ zone('.', root_args) }}
+
+{% for name, args in zones.items() -%}
+{% if not name == '.' -%}
+{{ zone(name, args) }}
+{% endif %}
+{% endfor %}
+{% endmacro -%}

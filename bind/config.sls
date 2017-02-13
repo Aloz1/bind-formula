@@ -11,7 +11,7 @@ include:
     - group: {{ dir_opts.group|default( map.group ) }}
     - mode: {{ dir_opts.mode|default( map.modes.dir ) }}
 
-    - makedirs: True
+    - makedirs: true
 
     - require:
       - bind_install
@@ -42,10 +42,11 @@ include:
       - service: bind_running
 
 {% endfor %}
+{% endfor %}
 
-{% if dir_name == map.keys_dir %}
+
 {% for key_name, key_opts in salt['pillar.get']('bind:keys', {}).items() %}
-{{ dir_name }}/{{ key_name }}.{{ map.key_extension }}:
+{{ map.keys_dir }}/{{ key_name }}.{{ map.key_extension }}:
   file.managed:
     - source: "salt://bind/files/common/key_file"
     - template: jinja
@@ -58,7 +59,7 @@ include:
     - mode: 600
 
     - require:
-      - {{ dir_name }}
+      - {{ map.keys_dir }}
 
     - require_in:
       - service: bind_running
@@ -67,11 +68,10 @@ include:
       - service: bind_running
 
 {% endfor %}
-{% endif %}
 
-{% if dir_name == map.service_dir %}
 {% for zone_name, zone_opts in salt['pillar.get']('bind:zones', {}).items() %}
-{% if zone_opts['type'] in ['master','hint'] or zone_opts['file'] is defined %}
+{% set dir_name = map.dynamic_dir if 'allow-update' in zone_opts or 'update-policy' in zone_opts else map.service_dir %}
+{% if zone_name != '.' %}
 {{ dir_name }}/named.{{ zone_name }}:
   file.managed:
     - source: "salt://bind/files/common/zone_file"
@@ -95,9 +95,6 @@ include:
       - service: bind_running
 
 {% endif %}
-{% endfor %}
-{% endif %}
-
 {% endfor %}
 
 {#
