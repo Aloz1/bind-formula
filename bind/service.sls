@@ -3,7 +3,7 @@
 bind_running:
   service.running:
     - name: {{ map.service_name }}
-    - enable: true
-    - reload: true
+    - enable: True
+    - reload: True
     - require:
       - pkg: bind_install

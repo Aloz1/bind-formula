@@ -5,7 +5,7 @@ zone "{{ name }}" {
     type {{ args['type'] }};
 
 {%- if args['notify'] is defined %}
-    notify {{ args['notify'] }};
+    notify {{ args['notify']|lower }};
 {%- endif %}
 
 {%- if args['type'] in ['master','hint'] or (args['file'] is defined and args['file'] != '' and args['type'] != 'forward') %}
