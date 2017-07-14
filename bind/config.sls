@@ -70,9 +70,9 @@ include:
 {% endfor %}
 
 {% for zone_name, zone_opts in salt['pillar.get']('bind:zones', {}).items() %}
-{% set is_dynamic = (zone_opts['allow-update'] is defined) or (zone_opts['update-policy'] is defined) %}
+{% if zone_name != '.' and zone_opts['type'] != 'forward' %}
+{% set is_dynamic = ('none' not in zone_opts['allow-update']|default(['none'])) or (zone_opts['update-policy'] is defined) %}
 {% set dir_name = map.dynamic_dir if is_dynamic else map.service_dir %}
-{% if zone_name != '.' %}
 {{ dir_name }}/named.{{ zone_name }}:
   file.managed:
     - source: "salt://bind/files/common/zone_file"
