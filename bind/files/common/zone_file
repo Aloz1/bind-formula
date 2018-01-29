@@ -16,9 +16,16 @@ $ORIGIN {{ origin }}.
 {{ fqdn }}.		IN	A	{{ fqdn_ip4_addr }}
 {% endif -%}
 
-{% if not is_dynamic %}
+{% if not is_dynamic -%}
 {% for lname, lname_rr in records.items() %}
+{% if lname_rr is mapping -%}
 {{ lname }}	{{ lname_rr['ttl']|default('') }}	{{ lname_rr['class']|default('IN') }}	{{ lname_rr['type'] }}
 {%- for opt in lname_rr['opts'] %}	{{ opt }} {%- endfor %}
+{% else -%}
+{% for sub_lname_rr in lname_rr %}
+{{ lname }}	{{ sub_lname_rr['ttl']|default('') }}	{{ sub_lname_rr['class']|default('IN') }}	{{ sub_lname_rr['type'] }}
+{%- for opt in sub_lname_rr['opts'] %}	{{ opt }} {%- endfor %}
 {% endfor -%}
-{% endif %}
+{% endif -%}
+{% endfor -%}
+{% endif -%}
