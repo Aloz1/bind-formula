@@ -1,22 +1,21 @@
 {%- from "bind/map.jinja" import map with context -%}
 {%- macro zone(name, args = {}) -%}
 zone "{{ name }}" {
-{%- set file_prefix = map.dynamic_dir + '/' if 'allow-update' in args or 'update-policy' in args else '' %}
+{%- set file_prefix = map.dynamic_dir + '/' if 'allow-update' in args or 'update-policy' in args or args['type'] == 'slave' else '' %}
+{%- set file_suffix = '.jnl' if args['type'] == 'slave' else '' %}
     type {{ args['type'] }};
 
 {%- if args['notify'] is defined %}
     notify {{ args['notify']|lower }};
 {%- endif %}
 
-{%- if args['type'] in ['master','hint'] or (args['file'] is defined and args['file'] != '' and args['type'] != 'forward') %}
-    file "{{ file_prefix }}named.{{ args['file']|default(name) }}";
+{%- if args['type'] in ['delegation-only', 'hint', 'master', 'redirect', 'slave'] or (args['file'] is defined and args['file'] != '' and args['type'] != 'forward') %}
+    file "{{ file_prefix }}named.{{ args['file']|default(name) }}{{ file_suffix }}";
 {%- endif %}
 
 {%- if args['masters'] is defined %}
     masters {
-    {% for master in args['masters'] %}
-        {{ masters }};
-    {% endfor %}
+        {% for master in args['masters'] -%} {{ master }}; {%- endfor %}
     };
 {%- endif %}
 

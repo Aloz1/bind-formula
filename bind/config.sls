@@ -70,11 +70,13 @@ include:
 {% endfor %}
 
 {% for zone_name, zone_opts in salt['pillar.get']('bind:zones', {}).items() %}
-{% if zone_name != '.' and zone_opts['type'] != 'forward' %}
+{% if zone_name != '.' and not (zone_opts['type'] in ['forward', 'slave']) %}
+{% set is_master = zone_opts['type'] in ['delegation-only', 'master', 'redirect'] %}
 {% set is_dynamic = ('none' not in zone_opts['allow-update']|default(['none'])) or (zone_opts['update-policy'] is defined) %}
 {% set dir_name = map.dynamic_dir if is_dynamic else map.service_dir %}
 {{ dir_name }}/named.{{ zone_name }}:
   file.managed:
+{% if is_master %}
     - source: "salt://bind/files/common/zone_file"
     - template: jinja
     - replace: {{ not is_dynamic }}
@@ -83,6 +85,7 @@ include:
         authority: {{ zone_opts.authority|default({}) }}
         records: {{ zone_opts.records|default({}) }}
         is_dynamic: {{ is_dynamic }}
+{% endif %}
 
     - user: {{ map.user }}
     - group: {{ map.group }}
